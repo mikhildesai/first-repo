@@ -4,6 +4,8 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -50,6 +52,8 @@ const columns: ColumnDef<Todo>[] = [
 ];
 
 function Table() {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
   const getTodos = async () => {
     const response = await axios.get(
       "https://jsonplaceholder.typicode.com/todos/"
@@ -65,7 +69,12 @@ function Table() {
   const table = useReactTable({
     data,
     columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
   if (isLoading) return "Loading...";
@@ -130,27 +139,35 @@ function Table() {
       <div>
         <table className="table table-border w-full table-zebra mt-5 ">
           <thead>
-            {table
-              .getHeaderGroups()
-              .map(
-                (headerGroup: {
-                  id: React.Key | null | undefined;
-                  headers: any[];
-                }) => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <th key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </th>
-                    ))}
-                  </tr>
-                )
-              )}
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <th key={header.id} colSpan={header.colSpan}>
+                      {header.isPlaceholder ? null : (
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? "cursor-pointer select-none"
+                              : "",
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: " 🔼",
+                            desc: " 🔽",
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      )}
+                    </th>
+                  );
+                })}
+              </tr>
+            ))}
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
