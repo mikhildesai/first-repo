@@ -85,8 +85,8 @@ function Table() {
   if (error) return "Some error occurred";
 
   return (
-    <div className="container mx-auto p-2 mt-5 text-xl font-sans border-2">
-      <div className="container h-8 " />
+    <div className="container mx-auto p-2 mt-5 text-xl font-sans">
+      <div />
       <div className="flex items-center justify-end gap-2 ml-5 mb-5">
         <button
           className="border rounded p-1"
@@ -141,13 +141,20 @@ function Table() {
         </select>
       </div>
       <div>
-        <table className="table table-border w-full table-zebra mt-5 ">
+        <h1 className="text-center text-blue-800 text-4xl">
+          Sample Data into Tanstack Table
+        </h1>
+        <table className="table table-zebra w-full border-8 border-indigo-600 mt-5 ">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
+              <tr key={headerGroup.id} className="border border-indigo-600">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <th key={header.id} colSpan={header.colSpan}>
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className="border-r border-indigo-600 text-lg"
+                    >
                       {header.isPlaceholder ? null : (
                         <div
                           {...{
@@ -181,9 +188,9 @@ function Table() {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
+              <tr key={row.id} className="border border-indigo-600">
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
+                  <td key={cell.id} className="border-r border-indigo-600">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -221,7 +228,7 @@ function Filter({
           ])
         }
         placeholder={`Min`}
-        className="w-24 border shadow rounded"
+        className="w-16 border shadow rounded"
       />
       <input
         type="number"
@@ -233,7 +240,7 @@ function Filter({
           ])
         }
         placeholder={`Max`}
-        className="w-24 border shadow rounded"
+        className="w-16 h-8 border shadow rounded"
       />
     </div>
   ) : (
@@ -242,7 +249,7 @@ function Filter({
       value={(columnFilterValue ?? "") as string}
       onChange={(e) => column.setFilterValue(e.target.value)}
       placeholder={`Search...`}
-      className="w-36 border shadow rounded"
+      className="w-48 h-8 border shadow rounded"
     />
   );
 }
